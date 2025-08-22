@@ -3,6 +3,8 @@ package main
 import (
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/shikidy/golang_grpc_train_sso/internal/app"
 	"github.com/shikidy/golang_grpc_train_sso/internal/config"
@@ -27,6 +29,11 @@ func main() {
 	)
 
 	go application.GRPCserv.MustRun()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	<-stop
 }
 
 func setupLogger(env string) *slog.Logger {
